@@ -5,14 +5,16 @@ import java.util.regex.*;
 
 public class Regex extends JFrame {
     private JTextArea patternField;
-    private JTextArea textField;
-    private JButton checkButton;
+    private JTextField text1Field;
+    private JTextArea text2Field;
+    private JButton checkButtonText1;
+    private JButton checkButtonText2;
     private JLabel resultLabel;
     private JTextArea matchArea;
 
     public Regex() {
         setTitle("Expresii Regulate");
-        setSize(800, 600);
+        setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLocationRelativeTo(null);
@@ -22,13 +24,18 @@ public class Regex extends JFrame {
         JScrollPane patternScrollPane = new JScrollPane(patternField);
         patternScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        textField = new JTextArea(5, 30);
-        textField.setLineWrap(true);
-        textField.setWrapStyleWord(true);
-        JScrollPane textScrollPane = new JScrollPane(textField);
-        textScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        text1Field = new JTextField(30);
+        JScrollPane text1ScrollPane = new JScrollPane(text1Field);
+        text1ScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        checkButton = new JButton("Verifica");
+        text2Field = new JTextArea(5, 30);
+        text2Field.setLineWrap(true);
+        text2Field.setWrapStyleWord(true);
+        JScrollPane text2ScrollPane = new JScrollPane(text2Field);
+        text2ScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        checkButtonText1 = new JButton("Verifica");
+        checkButtonText2 = new JButton("Verifica");
         resultLabel = new JLabel();
         matchArea = new JTextArea();
         JScrollPane matchScrollPane = new JScrollPane(matchArea);
@@ -50,18 +57,32 @@ public class Regex extends JFrame {
         inputPanel.add(patternScrollPane, gbc);
 
         gbc.gridy = 2;
-        JLabel textLabel = new JLabel("Text:");
-        textLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        inputPanel.add(textLabel, gbc);
+        JLabel text1Label = new JLabel("Text1:");
+        text1Label.setFont(new Font("Arial", Font.BOLD, 16));
+        inputPanel.add(text1Label, gbc);
 
         gbc.gridy = 3;
-        inputPanel.add(textScrollPane, gbc);
+        inputPanel.add(text1ScrollPane, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
-        checkButton.setFont(new Font("Arial", Font.BOLD, 16));
-        inputPanel.add(checkButton, gbc);
+        checkButtonText1.setFont(new Font("Arial", Font.BOLD, 16));
+        inputPanel.add(checkButtonText1, gbc);
+
+        gbc.gridy = 5;
+        JLabel text2Label = new JLabel("Text2:");
+        text2Label.setFont(new Font("Arial", Font.BOLD, 16));
+        inputPanel.add(text2Label, gbc);
+
+        gbc.gridy = 6;
+        inputPanel.add(text2ScrollPane, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        checkButtonText2.setFont(new Font("Arial", Font.BOLD, 16));
+        inputPanel.add(checkButtonText2, gbc);
 
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridLayout(2, 1));
@@ -73,30 +94,52 @@ public class Regex extends JFrame {
         container.add(inputPanel, BorderLayout.NORTH);
         container.add(resultPanel, BorderLayout.CENTER);
 
-        checkButton.addActionListener(new ActionListener() {
+        checkButtonText1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String pattern = patternField.getText();
-                String text = textField.getText();
-
-                try {
-                    //Pattern regexPattern = Pattern.compile("(?i)\\b(" + pattern + ")\\b");
-                    Pattern regexPattern = Pattern.compile("(?i)(" + pattern + ")");
-                    Matcher matcher = regexPattern.matcher(text);
-
-                    matchArea.setText("");
-
-                    if (matcher.find()) {
-                        resultLabel.setText("Textul are match cu pattern-ul.");
-                        do {
-                            matchArea.append(matcher.group() + "\n");
-                        } while (matcher.find());
-                    } else {
-                        resultLabel.setText("Textul nu are match cu pattern-ul!");
-                    }
-                } catch (PatternSyntaxException ex) {
-                    JOptionPane.showMessageDialog(null, "Pattern-ul introdus este invalid: " + ex.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
-                }
+                handleCheckButtonClick(text1Field);
             }
+        });
+
+        checkButtonText2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                handleCheckButtonClick(text2Field);
+            }
+        });
+    }
+
+    private void handleCheckButtonClick(JComponent textComponent) {
+        String pattern = patternField.getText();
+        String text = "";
+
+        if (textComponent instanceof JTextArea) {
+            text = ((JTextArea) textComponent).getText();
+        } else if (textComponent instanceof JTextField) {
+            text = ((JTextField) textComponent).getText();
+        }
+
+        try {
+            Pattern regexPattern = Pattern.compile("(?i)(" + pattern + ")");
+            Matcher matcher = regexPattern.matcher(text);
+
+            matchArea.setText("");
+
+            if (matcher.find()) {
+                resultLabel.setText("Textul are match cu pattern-ul.");
+                do {
+                    matchArea.append(matcher.group() + "\n");
+                } while (matcher.find());
+            } else {
+                resultLabel.setText("Textul nu are match cu pattern-ul!");
+            }
+        } catch (PatternSyntaxException ex) {
+            JOptionPane.showMessageDialog(null, "Pattern-ul introdus este invalid: " + ex.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Regex regex = new Regex();
+            regex.setVisible(true);
         });
     }
 }
