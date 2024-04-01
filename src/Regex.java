@@ -79,7 +79,8 @@ public class Regex extends JFrame {
                 String text = textField.getText();
 
                 try {
-                    Pattern regexPattern = Pattern.compile("(?i)\\b(" + pattern + ")\\b");
+                    //Pattern regexPattern = Pattern.compile("(?i)\\b(" + pattern + ")\\b");
+                    Pattern regexPattern = Pattern.compile("(?i)(" + pattern + ")");
                     Matcher matcher = regexPattern.matcher(text);
 
                     matchArea.setText("");
